@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Plunia — Deeptech for the Operating Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet" />
+<style>
+  /* --- AOT Serial Mono fallback via Azeret Mono (closest free serial-mono on Google) --- */
+  @import url('https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300;400;500;700&display=swap');
+
+  :root {
+    --olive: #3D4A2A;
+    --olive-deep: #2A3520;
+    --cream: #EDDBC2;
+    --cream-soft: #F5E9D4;
+    --burgundy: #391212;
+    --rose: #D18F8F;
+    --rose-soft: #E5B5B5;
+
+    --font-mono: 'Azeret Mono', 'AOT Serial Mono', ui-monospace, monospace;
+    --font-sans: 'Satoshi', -apple-system, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--cream);
+    color: var(--olive-deep);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* --- Grain overlay --- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.08;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* --- Top nav --- */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    padding: 28px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 50;
+    mix-blend-mode: multiply;
+  }
+
+  .nav-mark {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--olive);
+  }
+
+  .nav-status {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--olive);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rose);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  /* --- Main hero --- */
+  main {
+    min-height: 100vh;
+    padding: 140px 48px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    position: relative;
+  }
+
+  .left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .label-stack {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--burgundy);
+    line-height: 2.2;
+  }
+
+  .label-stack span {
+    display: block;
+    opacity: 0;
+    animation: slideUp 0.8s ease-out forwards;
+  }
+  .label-stack span:nth-child(1) { animation-delay: 0.2s; }
+  .label-stack span:nth-child(2) { animation-delay: 0.35s; }
+  .label-stack span:nth-child(3) { animation-delay: 0.5s; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .wordmark {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: clamp(120px, 18vw, 280px);
+    line-height: 0.82;
+    letter-spacing: -0.06em;
+    color: var(--burgundy);
+    margin-top: 40px;
+    position: relative;
+    opacity: 0;
+    animation: slideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+  }
+
+  .wordmark .accent {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-style: italic;
+    font-size: 0.18em;
+    vertical-align: super;
+    color: var(--rose);
+    letter-spacing: 0;
+    margin-left: 8px;
+  }
+
+  /* --- Right column --- */
+  .right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    text-align: right;
+    position: relative;
+  }
+
+  .announce-card {
+    background: var(--burgundy);
+    color: var(--cream);
+    padding: 36px 40px;
+    border-radius: 4px;
+    max-width: 380px;
+    text-align: left;
+    position: relative;
+    transform: rotate(1.5deg);
+    box-shadow: 0 30px 60px -20px rgba(57, 18, 18, 0.35);
+    opacity: 0;
+    animation: slideUp 1s ease-out 1.2s forwards;
+  }
+
+  .announce-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    border: 1px solid var(--rose);
+    border-radius: 4px;
+    transform: rotate(-3deg);
+    z-index: -1;
+    background: var(--rose);
+    opacity: 0.4;
+  }
+
+  .announce-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .announce-tag::before {
+    content: '';
+    width: 16px;
+    height: 1px;
+    background: var(--rose);
+  }
+
+  .announce-title {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .announce-title em {
+    font-family: var(--font-mono);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--rose);
+  }
+
+  .announce-body {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--cream-soft);
+    opacity: 0.85;
+  }
+
+  /* --- Description block --- */
+  .desc {
+    max-width: 320px;
+    text-align: right;
+    margin-top: 60px;
+    opacity: 0;
+    animation: slideUp 1s ease-out 1.4s forwards;
+  }
+
+  .desc-mono {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--olive);
+    margin-bottom: 14px;
+  }
+
+  .desc p {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--burgundy);
+  }
+
+  /* --- Email signup --- */
+  .signup {
+    margin-top: 48px;
+    width: 100%;
+    max-width: 380px;
+    opacity: 0;
+    animation: slideUp 1s ease-out 1.6s forwards;
+  }
+
+  .signup-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--olive);
+    margin-bottom: 12px;
+    text-align: left;
+  }
+
+  .signup-row {
+    display: flex;
+    border-bottom: 1.5px solid var(--olive);
+    padding-bottom: 8px;
+  }
+
+  .signup-row input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    color: var(--olive-deep);
+    padding: 8px 0;
+  }
+
+  .signup-row input::placeholder {
+    color: var(--olive);
+    opacity: 0.5;
+  }
+
+  .signup-row button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--olive);
+    padding: 8px 4px 8px 16px;
+    transition: color 0.2s;
+  }
+
+  .signup-row button:hover {
+    color: var(--rose);
+  }
+
+  /* --- Bottom marquee --- */
+  .marquee {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    background: var(--olive);
+    padding: 14px 0;
+    z-index: 40;
+    border-top: 1px solid var(--olive-deep);
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: 60px;
+    white-space: nowrap;
+    animation: marquee 40s linear infinite;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream);
+  }
+
+  .marquee-track span {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+  }
+
+  .marquee-track span::after {
+    content: '✦';
+    color: var(--rose);
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* --- Floating decorative element --- */
+  .deco {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--rose-soft) 0%, transparent 70%);
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: -1;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-45%, -55%) scale(1.1); }
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 900px) {
+    main {
+      grid-template-columns: 1fr;
+      padding: 120px 24px 100px;
+      gap: 60px;
+    }
+    nav { padding: 20px 24px; }
+    .right { align-items: flex-start; text-align: left; }
+    .desc { text-align: left; }
+    .announce-card { max-width: 100%; }
+    .wordmark { font-size: clamp(80px, 22vw, 160px); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-mark">Plunia<sup>®</sup> / Deeptech for the OR</div>
+  <div class="nav-status">
+    <span class="status-dot"></span>
+    <span>In stealth / 2026</span>
+  </div>
+</nav>
+
+<main>
+  <div class="deco"></div>
+
+  <section class="left">
+    <div class="label-stack">
+      <span>—— File 001 / InteracOR</span>
+      <span>Computer vision, built for surgery</span>
+      <span>First system shipping soon</span>
+    </div>
+
+    <h1 class="wordmark">Plunia<span class="accent">/01</span></h1>
+  </section>
+
+  <section class="right">
+    <div class="announce-card">
+      <div class="announce-tag">Launching Soon</div>
+      <div class="announce-title">
+        Meet <em>InteracOR.</em><br/>
+        Our first system.
+      </div>
+      <div class="announce-body">
+        Real-time, instrument-based interaction for the operating room. Built from years of research, designed with the surgeons who'll use it.
+      </div>
+    </div>
+
+    <div class="desc">
+      <div class="desc-mono">/ About</div>
+      <p>Plunia is a deeptech company building computer vision systems for surgical environments. We turn research into tools that work in the room — not in theory.</p>
+    </div>
+
+    <div class="signup">
+      <div class="signup-label">/ Get the launch note</div>
+      <div class="signup-row">
+        <input type="email" placeholder="you@domain.com" />
+        <button onclick="document.querySelector('.signup-label').textContent='/ You&apos;re on the list ✦'">Notify me →</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span>Plunia 2026</span>
+    <span>InteracOR — Launching Soon</span>
+    <span>Computer vision for the OR</span>
+    <span>Built with surgeons</span>
+    <span>From the lab to the room</span>
+    <span>Plunia 2026</span>
+    <span>InteracOR — Launching Soon</span>
+    <span>Computer vision for the OR</span>
+    <span>Built with surgeons</span>
+    <span>From the lab to the room</span>
+  </div>
+</div>
+
+</body>
+</html>
