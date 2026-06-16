@@ -382,11 +382,11 @@
 
   <section class="demo" id="demo">
     <div class="mono-label rv">/ 01 — See it work</div>
-    <!-- VIDEO SLOT — remplace .video-placeholder par ton embed :
-         <video controls poster="poster.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-           <source src="demo.mp4" type="video/mp4" />
-         </video>
-         ou un iframe YouTube/Vimeo avec le même style position:absolute;inset:0;width:100%;height:100% -->
+    <div class="video-frame rv">
+          <iframe src="https://player.vimeo.com/video/1201833549?title=0&byline=0&portrait=0"
+            style="position:absolute;inset:0;width:100%;height:100%;border:0;"
+            allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+        </div>
     <div class="video-frame rv" role="button" tabindex="0" aria-label="Play the InteractOR demo video">
       <div class="video-grid-bg"></div>
       <div class="video-placeholder">
