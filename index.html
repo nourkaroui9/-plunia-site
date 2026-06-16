@@ -382,12 +382,9 @@
 
   <section class="demo" id="demo">
     <div class="mono-label rv">/ 01 — See it work</div>
-    <div class="video-frame rv">
-          <iframe src="https://player.vimeo.com/video/1201833549?title=0&byline=0&portrait=0"
-            style="position:absolute;inset:0;width:100%;height:100%;border:0;"
-            allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-        </div>
-    <div class="video-frame rv" role="button" tabindex="0" aria-label="Play the InteractOR demo video">
+    <!-- Vidéo auto-hébergée. Place ton fichier .mp4 à côté de ce HTML (ou dans /public),
+         puis ajuste le nom dans la fonction playDemo() en bas de page (par défaut : demo.mp4). -->
+    <div class="video-frame rv" id="demo-frame" role="button" tabindex="0" aria-label="Lire la démo InteractOR">
       <div class="video-grid-bg"></div>
       <div class="video-placeholder">
         <div class="play-ring">
@@ -571,6 +568,23 @@
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
   }, { threshold: 0.12 });
   document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+  /* ── DEMO VIDEO — click-to-play ──
+     Le cache bordeaux reste affiché ; au clic, la vidéo se charge et se lance.
+     Change "demo.mp4" ci-dessous pour le nom exact de ton fichier. */
+  const demoFrame = document.getElementById('demo-frame');
+  function playDemo() {
+    if (demoFrame.dataset.playing) return;
+    demoFrame.dataset.playing = '1';
+    demoFrame.innerHTML =
+      '<video autoplay controls playsinline ' +
+      'style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#391212;">' +
+      '<source src="demo.mp4" type="video/mp4" /></video>';
+  }
+  demoFrame.addEventListener('click', playDemo);
+  demoFrame.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); playDemo(); }
+  });
 </script>
 
 </body>
